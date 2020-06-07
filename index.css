@@ -8,3 +8,7 @@ body {
   overflow: hidden;
   position: relative;
 }
+
+canvas {
+  border: #2f2f2f solid 1px;
+}
