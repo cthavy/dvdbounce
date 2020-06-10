@@ -1,9 +1,9 @@
-var canvas = document.getElementById('canvas');
-var ctx = canvas.getContext('2d', {alpha: false});
-var dvd = new Image();
-dvd.src = "dvd.svg";
+let canvas = document.getElementById('canvas');
+let ctx = canvas.getContext('2d', {alpha: false});
+let dvdLogo = new Image();
+dvdLogo.src = "dvd.svg";
 
-var ball = {
+let dvd = {
   x: 300,
   y: 150,
   vx: 3,
@@ -12,39 +12,42 @@ var ball = {
   height: 150,
   color: 'blue',
   draw: function() {
-    
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
-    // ctx.globalCompositeOperation = "destination-in";
-    ctx.drawImage(dvd, this.x, this.y, this.width, this.height);
+    ctx.drawImage(dvdLogo, this.x, this.y, this.width, this.height);
     
-    // ctx.fill();
-    window.requestAnimationFrame(draw);
+    reqID = window.requestAnimationFrame(draw);
   },
   recolor: function() {
     this.color = "hsl(" + Math.floor(Math.random()*360) + ", 100%, " + Math.floor(Math.random()*50+30) + "%)";
     ctx.fillStyle = this.color;
-    
-    console.log(this.color);
   }
 };
 
 function draw() {
-  if (ball.y + ball.vy + ball.height > canvas.height || ball.y + ball.vy < 0) {
-    ball.vy = -ball.vy;
-    ball.recolor();
+  if (dvd.y + dvd.vy + dvd.height > canvas.height || dvd.y + dvd.vy < 0) {
+    dvd.vy = -dvd.vy;
+    dvd.recolor();
   }
-  if (ball.x + ball.vx + ball.width > canvas.width || ball.x + ball.vx < 0) {
-    ball.vx = -ball.vx;
-    ball.recolor();
+  if (dvd.x + dvd.vx + dvd.width > canvas.width || dvd.x + dvd.vx < 0) {
+    dvd.vx = -dvd.vx;
+    dvd.recolor();
   }
-  
+
   ctx.clearRect(0,0, canvas.width, canvas.height);
-  ball.draw();
-  ball.x += ball.vx;
-  ball.y += ball.vy;
+  dvd.draw();
+  dvd.x += dvd.vx;
+  dvd.y += dvd.vy;
 }
 
-// @todo make responsive
+function windowResize() {
+  window.cancelAnimationFrame(reqID);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  reqID = window.requestAnimationFrame(draw);
+}
 
-dvd.onload = ball.draw();
+window.addEventListener('resize', windowResize);
+
+let reqID = null;
+dvdLogo.onload = dvd.draw();
