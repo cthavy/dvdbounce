@@ -14,9 +14,10 @@ let dvd = {
   draw: function() {
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
+    // @todo randomize x y placement and speed
     ctx.drawImage(dvdLogo, this.x, this.y, this.width, this.height);
     
-    reqID = window.requestAnimationFrame(draw);
+    window.requestAnimationFrame(draw);
   },
   recolor: function() {
     this.color = "hsl(" + Math.floor(Math.random()*360) + ", 100%, " + Math.floor(Math.random()*50+30) + "%)";
@@ -25,29 +26,29 @@ let dvd = {
 };
 
 function draw() {
-  if (dvd.y + dvd.vy + dvd.height > canvas.height || dvd.y + dvd.vy < 0) {
+  // resize before render loop for better performance
+  if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  // checking bottom and top boundaries
+  if ((dvd.y + dvd.vy + dvd.height > canvas.height && dvd.vy >= 0) || (dvd.y + dvd.vy < 0 && dvd.vy <= 0)) {
     dvd.vy = -dvd.vy;
     dvd.recolor();
   }
-  if (dvd.x + dvd.vx + dvd.width > canvas.width || dvd.x + dvd.vx < 0) {
+
+  // checking right and left boundaries
+  if ((dvd.x + dvd.vx + dvd.width > canvas.width && dvd.vx >= 0) || (dvd.x + dvd.vx < 0 && dvd.vx <= 0)) {
     dvd.vx = -dvd.vx;
     dvd.recolor();
   }
 
+  // update and redraw
   ctx.clearRect(0,0, canvas.width, canvas.height);
-  dvd.draw();
   dvd.x += dvd.vx;
   dvd.y += dvd.vy;
+  dvd.draw();
 }
 
-function windowResize() {
-  window.cancelAnimationFrame(reqID);
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  reqID = window.requestAnimationFrame(draw);
-}
-
-window.addEventListener('resize', windowResize);
-
-let reqID = null;
 dvdLogo.onload = dvd.draw();
